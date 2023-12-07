@@ -1,0 +1,11 @@
+.ib_container {
+  width: 85%;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.ib_book_container {
+  background-color: white;
+  margin: 10px;
+}

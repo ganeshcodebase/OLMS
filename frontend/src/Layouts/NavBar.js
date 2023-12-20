@@ -36,7 +36,8 @@ const NavBar = () => {
         </div>
 
         <div>
-          <img src={Logout} width={25} style={{ marginRight: "20px" }}></img>
+          <a href="/logout">
+          <img src={Logout} width={25} style={{ marginRight: "20px" }}></img></a>
         </div>
       </div>
     </>

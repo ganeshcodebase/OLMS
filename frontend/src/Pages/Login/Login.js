@@ -1,16 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Login.css";
 import { Form, Button } from "react-bootstrap";
 import InputField from "../../Components/InputField";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { userLogin } from "../../API/actions";
 
 const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showError, setShowError] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const isLoggedin = useSelector((state) => state.isLoginFetched);
+  const isSubmitted = useSelector((state) => state.submitted);
+
+  const response = useSelector((state) => JSON.stringify(state.userDetails));
+
+  useEffect(() => {
+    if (isLoggedin) {
+      var response = JSON.parse(localStorage.getItem("userDetails"));
+      if (response.ok) {
+        if (response) {
+          if (response.data["message"] === "Logged In") {
+            localStorage.setItem(
+              "token",
+              response.data["api_key"] + ":" + response.data["api_secret"]
+            );
+            localStorage.setItem("authenticated", true);
+            localStorage.setItem("full_name", response.data["full_name"]);
+            navigate("/dashboard");
+          } else {
+            // setShowLoader(false);
+            setShowError(true);
+          }
+        }
+      } else if ((response.status = 403)) {
+        // setShowLoader(false);
+        setShowError(true);
+      } else {
+        // setShowLoader(false);
+        setShowError(true);
+      }
+    }
+  }, [isLoggedin, isSubmitted]);
 
   const handleLogin = (e) => {
     if (username !== "" && password !== "") {
       e.preventDefault();
+      // setShowLoader(true);
+      setSubmitted(!submitted);
+      dispatch(userLogin(username, password, submitted));
       setShowError(false);
     } else {
       setShowError(true);
@@ -56,6 +97,9 @@ const Login = () => {
               required
               placeholder="Enter Password"
             />
+            {showError && (
+              <span style={{ color: "red", marginLeft:'80px' }}>Invalid Username/Password</span>
+            )}
             <div
               style={{
                 margin: "auto",
@@ -66,9 +110,7 @@ const Login = () => {
             >
               Forgot password
             </div>
-            {showError && (
-              <span style={{ color: "red" }}>Invalid Username/Password</span>
-            )}
+            
             <div
               style={{
                 margin: "auto",
